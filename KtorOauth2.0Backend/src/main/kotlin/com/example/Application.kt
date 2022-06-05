@@ -96,18 +96,6 @@ fun Application.module() {
         json()
     }
     install(Routing) {
-        get("/") {
-            call.respondHtml {
-                body {
-                    p {
-                        a("/login-google") { +"Login with Google" }
-                    }
-                    p {
-                        a("/login-github") { +"Login with GitHub" }
-                    }
-                }
-            }
-        }
         authenticationRoutes()
         authGithub()
     }
