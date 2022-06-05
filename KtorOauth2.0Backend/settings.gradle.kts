@@ -1,0 +1,1 @@
+rootProject.name = "KtorOauth2.0Backend"
