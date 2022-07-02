@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.example.oauth.authGithub
 import com.example.oauth.authenticationRoutes
+import com.example.oauth.oauthSlack
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.http.*
@@ -18,6 +19,8 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
+import com.slack.api.Slack;
+
 
 
 data class User(val id: String, val name: String)
@@ -49,7 +52,7 @@ fun Application.module() {
             }
             client = HttpClient(CIO)
         }
-        oauth("auth-aouth-github") {
+        oauth("auth-oauth-github") {
             urlProvider = { "http://localhost:8080/oauth-github" }
             client = HttpClient(CIO)
             providerLookup = {
@@ -60,6 +63,21 @@ fun Application.module() {
                     requestMethod = HttpMethod.Post,
                     clientId = System.getenv("GITHUB_CLIENT_ID"),
                     clientSecret = System.getenv("GITHUB_CLIENT_SECRET")
+                )
+            }
+        }
+
+        oauth("auth-oauth-slack") {
+            urlProvider = { "https://aa23-93-157-76-147.eu.ngrok.io/hello-slack" }
+            client = HttpClient(CIO)
+            providerLookup = {
+                OAuthServerSettings.OAuth2ServerSettings(
+                    name = "slack",
+                    authorizeUrl = "https://slack.com/openid/connect/authorize?scope=openid%20profile%20email",
+                    accessTokenUrl = "https://slack.com/api/openid.connect.token",
+                    requestMethod = HttpMethod.Post,
+                    clientId = System.getenv("SLACK_CLIENT_ID"),
+                    clientSecret = System.getenv("SLACK_CLIENT_SECRET")
                 )
             }
         }
@@ -98,6 +116,7 @@ fun Application.module() {
     install(Routing) {
         authenticationRoutes()
         authGithub()
+        oauthSlack()
     }
 }
 

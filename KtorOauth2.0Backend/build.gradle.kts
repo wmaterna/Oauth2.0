@@ -25,6 +25,9 @@ repositories {
 }
 
 dependencies {
+    implementation("com.slack.api:slack-api-client:1.2.1")
+    implementation("com.slack.api:slack-api-model-kotlin-extension:1.2.1")
+    implementation("com.slack.api:slack-api-client-kotlin-extension:1.2.1")
     implementation("io.ktor:ktor-server-cors:$ktor_version")
     implementation("io.ktor:ktor-auth-jwt:1.6.7")
     implementation("io.ktor:ktor-server-auth:$ktor_version")
