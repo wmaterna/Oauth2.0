@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.example.oauth.authGithub
 import com.example.oauth.authenticationRoutes
+import com.example.oauth.fbOauth
 import com.example.oauth.oauthSlack
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -68,7 +69,7 @@ fun Application.module() {
         }
 
         oauth("auth-oauth-slack") {
-            urlProvider = { "https://aa23-93-157-76-147.eu.ngrok.io/hello-slack" }
+            urlProvider = { System.getenv("NGROK_ADDRESS") + "/hello-slack"}
             client = HttpClient(CIO)
             providerLookup = {
                 OAuthServerSettings.OAuth2ServerSettings(
@@ -78,6 +79,22 @@ fun Application.module() {
                     requestMethod = HttpMethod.Post,
                     clientId = System.getenv("SLACK_CLIENT_ID"),
                     clientSecret = System.getenv("SLACK_CLIENT_SECRET")
+                )
+            }
+        }
+
+        oauth("auth-oauth-facebook") {
+            urlProvider = { System.getenv("NGROK_ADDRESS") + "/people/auth/facebook/callback" }
+            client = HttpClient(CIO)
+            providerLookup = {
+                OAuthServerSettings.OAuth2ServerSettings(
+                    name = "facebook",
+                    authorizeUrl = "https://www.facebook.com/v8.0/dialog/oauth",
+                    accessTokenUrl = "https://graph.facebook.com/v8.0/oauth/access_token",
+                    requestMethod = HttpMethod.Get,
+                    clientId = System.getenv("FB_CLIENT_ID"),
+                    clientSecret = System.getenv("FB_CLIENT_SECRET"),
+                    defaultScopes = listOf("public_profile", "email")
                 )
             }
         }
@@ -114,6 +131,7 @@ fun Application.module() {
         json()
     }
     install(Routing) {
+        fbOauth()
         authenticationRoutes()
         authGithub()
         oauthSlack()

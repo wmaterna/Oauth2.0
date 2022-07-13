@@ -19,7 +19,7 @@ fun Route.oauthSlack(httpClient: HttpClient = httC) {
     val issuer =  System.getenv("KTOR_JWT_ISSUER")
     val audience =  System.getenv("KTOR_JWT_AUDIENCE")
 
-    authenticate("auth-oauth-slack") {
+    authenticate("auth-oauth-facebook") {
         get("/login-slack") {
         }
         get("/hello-slack") {
@@ -43,8 +43,8 @@ fun Route.oauthSlack(httpClient: HttpClient = httC) {
                         token,
                     )
                 )
+                call.respondText("Hello ${userInfo.name}");
                 call.response.headers.append("Authorization", "Bearer $token")
-
                 call.respondRedirect("http://localhost:3000/user/info")
             } else {
                 call.respondRedirect("/")
